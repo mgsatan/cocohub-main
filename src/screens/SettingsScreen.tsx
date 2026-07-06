@@ -105,7 +105,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ visible, emai
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.white} />
             ) : (
               <Text style={styles.btnText}>{t('changePassword.sendResetLink')}</Text>
             )}
@@ -382,6 +382,8 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
     ]);
   }, [onLogout, t]);
 
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
+
   // ── Render helpers ─────────────────────────────────────────────────────────
 
   const SectionHeader = ({ title }: { title: string }) => (
@@ -580,7 +582,7 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
           disabled={profileSaving}
         >
           {profileSaving ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.white} />
           ) : (
             <Text style={styles.btnText}>{t('settings.saveProfile')}</Text>
           )}
@@ -610,7 +612,7 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
                 value={Boolean(notifPrefs[key])}
                 onValueChange={(v) => void handleNotifToggle(key, v)}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={Platform.OS === 'android' ? '#fff' : undefined}
+                thumbColor={Platform.OS === 'android' ? colors.white : undefined}
                 disabled={notifSaving}
               />
             </View>
@@ -643,7 +645,7 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
                   value={biometricEnabled}
                   onValueChange={(v) => void handleBiometricToggle(v)}
                   trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={Platform.OS === 'android' ? '#fff' : undefined}
+                  thumbColor={Platform.OS === 'android' ? colors.white : undefined}
                 />
               )}
             </View>
@@ -711,7 +713,7 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
               record.status === 'success'
                 ? colors.success
                 : record.status === 'failed'
-                  ? '#d32f2f'
+                  ? colors.error
                   : colors.secondaryText;
             return (
               <React.Fragment key={entityType}>
@@ -760,7 +762,7 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
         disabled={loggingOut}
       >
         {loggingOut ? (
-          <ActivityIndicator color="#d32f2f" />
+          <ActivityIndicator color={colors.error} />
         ) : (
           <Text style={styles.logoutText}>{t('common.logout')}</Text>
         )}
@@ -778,13 +780,14 @@ const SettingsScreen: React.FC<Props> = ({ onLogout }) => {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1 },
+const createStyles = (colors: any) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 16, paddingBottom: 40 },
   screenTitle: {
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 20,
+    color: colors.text,
   },
   sectionHeader: {
     fontSize: 13,
@@ -794,22 +797,26 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 8,
     marginLeft: 4,
+    color: colors.secondaryText,
   },
   card: {
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOpacity: 0.05,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
     borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   label: {
     fontSize: 13,
     marginTop: 12,
     marginBottom: 4,
+    color: colors.secondaryText,
   },
   input: {
     borderWidth: 1,
@@ -817,20 +824,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 15,
+    borderColor: colors.border,
+    backgroundColor: colors.input,
+    color: colors.text,
   },
   successText: {
     fontSize: 13,
     marginTop: 8,
     marginBottom: 4,
+    color: colors.success,
   },
   helperText: {
     fontSize: 12,
     marginTop: 4,
     marginBottom: 4,
     fontStyle: 'italic',
+    color: colors.placeholder,
   },
   btn: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
@@ -838,44 +850,45 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   btnDisabled: { opacity: 0.6 },
-  btnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  btnText: { color: colors.white, fontSize: 15, fontWeight: '600' },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 14,
   },
-  rowLabel: { fontSize: 15 },
-  rowValue: { fontSize: 15 },
-  chevron: { fontSize: 20 },
-  checkmark: { fontSize: 16, color: '#4CAF50', fontWeight: '700' },
-  separator: { height: 1, backgroundColor: '#f0f0f0' },
+  rowLabel: { fontSize: 15, color: colors.text },
+  rowValue: { fontSize: 15, color: colors.secondaryText },
+  chevron: { fontSize: 20, color: colors.placeholder },
+  checkmark: { fontSize: 16, color: colors.success, fontWeight: '700' },
+  separator: { height: 1, backgroundColor: colors.border },
   notifLoader: { alignSelf: 'flex-end', marginBottom: 4 },
   logoutBtn: {
     marginTop: 32,
     borderWidth: 1.5,
-    borderColor: '#d32f2f',
+    borderColor: colors.error,
     borderRadius: 10,
     paddingVertical: 14,
     alignItems: 'center',
   },
-  logoutText: { color: '#d32f2f', fontSize: 16, fontWeight: '600' },
-  // Modal
+  logoutText: { color: colors.error, fontSize: 16, fontWeight: '600' },
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
+    backgroundColor: colors.overlay,
   },
   modalCard: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 24,
     paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    backgroundColor: colors.surface,
   },
-  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12 },
-  modalBody: { fontSize: 15, marginBottom: 6 },
-  modalEmail: { fontSize: 15, fontWeight: '600', marginBottom: 20 },
+  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 12, color: colors.text },
+  modalBody: { fontSize: 15, marginBottom: 6, color: colors.secondaryText },
+  modalEmail: { fontSize: 15, fontWeight: '600', marginBottom: 20, color: colors.text },
   cancelBtn: { paddingVertical: 12, alignItems: 'center', marginTop: 8 },
-  cancelText: { fontSize: 15 },
+  cancelText: { fontSize: 15, color: colors.secondaryText },
   syncRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -887,6 +900,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     textAlign: 'right',
     marginLeft: 8,
+    color: colors.secondaryText,
   },
 });
 

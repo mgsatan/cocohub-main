@@ -41,6 +41,13 @@ const SOSButton: React.FC<SOSButtonProps> = ({ onSOSSent, style }) => {
     }
   }, [onSOSSent]);
 
+  // Register lock screen SOS action on Android
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      emergencyService.registerLockScreenSOSAction(triggerSOS);
+    }
+  }, [triggerSOS]);
+
   useEffect(() => {
     if (isCountdown) {
       // Pulsing animation during countdown

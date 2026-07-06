@@ -100,7 +100,7 @@ const QRScannerScreen: React.FC<QRScannerScreenProps> = ({
     })();
   };
 
-  const toggleTorch = () => setTorchEnabled(!torchEnabled);
+  const toggleTorch = useCallback(() => setTorchEnabled(prev => !prev), []);
 
   const handlePermissionDenied = () => {
     Alert.alert(
@@ -140,8 +140,9 @@ const QRScannerScreen: React.FC<QRScannerScreenProps> = ({
           style={styles.camera}
           facing="back"
           enableTorch={torchEnabled}
+          onCameraReady={() => console.log('Camera ready')}
           onBarcodeScanned={
-            scanned
+ ...[truncated]
               ? undefined
               : (result) => handleBarCodeScanned({ data: result.data } as BarCodeScannerResult)
           }
