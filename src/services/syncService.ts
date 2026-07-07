@@ -145,24 +145,27 @@ export class SyncService {
     await this.patchStatus({ isSyncing: true });
 
     const queue = await this.getQueue();
+    const succeeded: string[] = [];
     const failed: SyncItem[] = [];
 
     for (const item of queue) {
       try {
         await this.syncItem(item);
+        succeeded.push(item.id);
       } catch {
         item.retries += 1;
         if (item.retries < MAX_RETRIES) failed.push(item);
       }
     }
 
+    // Persist only the truly failed items (retries exhausted items are dropped)
     await setItem(SYNC_QUEUE_KEY, JSON.stringify(failed));
 
     await this.patchStatus({
       isSyncing: false,
       lastSync: Date.now(),
       pendingCount: failed.length,
-      failedCount: failed.filter((i) => i.retries >= MAX_RETRIES).length,
+      failedCount: queue.length - succeeded.length - failed.length,
     });
   }
 

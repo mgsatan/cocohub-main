@@ -316,11 +316,20 @@ export class SyncEngine {
       records: [record],
       strategy: this.options.strategy,
     });
+
+    // Validate HTTP status code explicitly
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`HTTP ${response.status}: Server rejected sync push`);
+    }
+
     const result = response.data as {
       results?: Array<{ status: string; serverRecord?: Record<string, unknown> }>;
     };
     const first = result.results?.[0];
-    if (!first || first.status === 'failed') throw new Error('Server rejected sync record');
+    // Only accept explicit 'success' or 'conflict' status; treat anything else as failure
+    if (!first || (first.status !== 'success' && first.status !== 'conflict')) {
+      throw new Error(`Server rejected sync record (status: ${first?.status ?? 'undefined'})`);
+    }
     if (first.status === 'conflict' && first.serverRecord) {
       this.emit({ type: 'conflict', total: 1, completed: 0, failed: 0, record });
     }
